@@ -174,3 +174,5 @@ b. UDF，具体怎么写没试验<br />
 简书 - Hive简易教程 - 自定义UDF - 示例：实现转化IP地址为二进制格式 - 链接：https://www.jianshu.com/p/7f8329443aae<br />
 CSDN - bitcarmanlee的博客 - hive udf开发超详细手把手教程 - 链接：https://blog.csdn.net/bitcarmanlee/article/details/51249260<br />
 CSDN - YQlakers的博客 - Hive的UDF是什么？ - 链接：https://blog.csdn.net/yqlakers/article/details/70211522
+c. Distributed NoSQL <Hive> (ORCFile or Parquet, columnar storage) + Distributed SQL Engine <Presto>
+参看文章“环境搭建 Hadoop+Hive(orcfile格式)+Presto实现大数据存储查询”，链接：https://www.cnblogs.com/nyzhai/p/6102423.html
