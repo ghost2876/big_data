@@ -1,16 +1,16 @@
 Hadoop 2.3, CDH 5.0.0 -> Hive 2.1
 
 # Hive 2.1 基础知识
-##1. 用sql查询HDFS上的数据<br />
+## 1. 用sql查询HDFS上的数据<br />
 <img src="hive_18.jpg" width="80%" height="80%" alt="hive_18"/><br />
-##2. Hive的数据都存储在HDFS的路径/user/hive/warehouse下，一个表一个子目录，使用./hive命令进入Hive shell<br />
+## 2. Hive的数据都存储在HDFS的路径/user/hive/warehouse下，一个表一个子目录，使用./hive命令进入Hive shell<br />
 /home<br />
 /system<br />
 /user<br />
 	下的/hive<br />
 		下的/warehouse<br />
 	下的/huang<br />
-##3. Hive里的数据类型<br />
+## 3. Hive里的数据类型<br />
 integer<br />
 float<br />
 boolean<br />
@@ -25,24 +25,24 @@ hdfs://master_server/user/hive/warehouse/mydb.db/employees/country=CA/state=AB<b
 hdfs://master_server/user/hive/warehouse/mydb.db/employees/country=CA/state=BC<br />
 hdfs://master_server/user/hive/warehouse/mydb.db/employees/country=US/state=AL<br />
 hdfs://master_server/user/hive/warehouse/mydb.db/employees/country=US/state=AK<br />
-##4. Hive虽然作为Hadoop里的数据仓库，但它与传统的RDBMS比如Oracle相比依旧有很大的区别。它无法做到在记录行级别上的插入、删除和更新操作。它对自己表里的数据的唯一更新办法就是整批载入（bulk load）。原因：基于HDFS
+## 4. Hive虽然作为Hadoop里的数据仓库，但它与传统的RDBMS比如Oracle相比依旧有很大的区别。它无法做到在记录行级别上的插入、删除和更新操作。它对自己表里的数据的唯一更新办法就是整批载入（bulk load）。原因：基于HDFS
 hive不支持INSERT INTO, UPDATE, DELETE操作，这样的话，就不要很复杂的锁机制来读写数据。Hive仅支持覆盖重写整个表，示例如下：<br />
 INSERT OVERWRITE TABLE t1 SELECT * FROM t2;
-##5. Hive不支持主键或者外键。不过Hive支持在列上建索引。
-##6. Hive的查询优化技巧<br />
-###6.1 在Hive里将aggr参数设置为true，可以显著地提升SELECT时进行group by统计count等分组计算的效率<br />
+## 5. Hive不支持主键或者外键。不过Hive支持在列上建索引。
+## 6. Hive的查询优化技巧<br />
+### 6.1 在Hive里将aggr参数设置为true，可以显著地提升SELECT时进行group by统计count等分组计算的效率<br />
 原因：aggr参数为false时，Hive先用SELECT将所有数据查出来，最后统一放到一台reduce节点机器上进行group by，这时所有的压力都压在这一台节点上；aggr为true时，Hive的SELECT会在每台节点上进行预group by，最后将group by后的数据放在reduce节点上，最终group by，缓解了最终的压力，将group by压力分摊，因此提升了效率。<br />
 <img src="hive_2.jpg" width="60%" height="60%" alt="hive_2"/><br />
-###6.2 有一个hint，在Hive查询时使用，使用该hint或设置join参数，可以基于map-side joins的原理来优化Hive里的连接操作。该原理的思想是，传统的连接操作最后一定是在Reduce节点上完成的，所有的压力卡在这一台Reduce节点。但如果要连接的两个表一大一小，较小的表小到完全可以存放在HDFS里任意一台节点上，这时Hive会自动将小表复制到每台节点，然后让它跟大表在本地节点上直接连接（每台节点上都有完整的小表，和大表的一部分），最后将数据传送到Reduce节点，这样分摊压力后，可以极大地提升连接的效率。使用join参数后，Hive会自动判定当前连接操作是否适用于map-side joins，而判定的依据，本质上就是判断小表到底有多小、到底能不能放到HDFS的每台节点中去。通过指定filesize参数，我们可以告诉Hive，当小表小于25 MB时，就基于map-side joins对当前连接优化。
-###6.3 Hive也可以查看Explain Plan<br />
-###6.4 设置参数mapred.job.reuse.jvm.num.tasks使得JVM在reducer中可以重用reuse，避免来回启动JVM浪费时间
-###6.5 设置参数hive.exec.parallel使得Hive中非相互依赖dependent的job可以并行执行
-###6.6 设置参数hive.exec.reducers.bytes.per.reducer开启多个reducer，这在in parallel地往同一张表中load数据时有用
-##7. Hive的权限控制
+### 6.2 有一个hint，在Hive查询时使用，使用该hint或设置join参数，可以基于map-side joins的原理来优化Hive里的连接操作。该原理的思想是，传统的连接操作最后一定是在Reduce节点上完成的，所有的压力卡在这一台Reduce节点。但如果要连接的两个表一大一小，较小的表小到完全可以存放在HDFS里任意一台节点上，这时Hive会自动将小表复制到每台节点，然后让它跟大表在本地节点上直接连接（每台节点上都有完整的小表，和大表的一部分），最后将数据传送到Reduce节点，这样分摊压力后，可以极大地提升连接的效率。使用join参数后，Hive会自动判定当前连接操作是否适用于map-side joins，而判定的依据，本质上就是判断小表到底有多小、到底能不能放到HDFS的每台节点中去。通过指定filesize参数，我们可以告诉Hive，当小表小于25 MB时，就基于map-side joins对当前连接优化。
+### 6.3 Hive也可以查看Explain Plan
+### 6.4 设置参数mapred.job.reuse.jvm.num.tasks使得JVM在reducer中可以重用reuse，避免来回启动JVM浪费时间
+### 6.5 设置参数hive.exec.parallel使得Hive中非相互依赖dependent的job可以并行执行
+### 6.6 设置参数hive.exec.reducers.bytes.per.reducer开启多个reducer，这在in parallel地往同一张表中load数据时有用
+## 7. Hive的权限控制
 参考BMA-1笔记的“2.7.22.17	Hive中如何实现权限控制？”一节。
-##8. Hive SQL的优化技巧
+## 8. Hive SQL的优化技巧
 参见BMA-1笔记“2.7.22.18	从哪些方面考虑对Hive SQL优化”一节。这里摘点重要的：<br />
-###在SELECT中，只拿需要的列，如果有，尽量使用分区过滤，少用SELECT 星。<br />
+### 在SELECT中，只拿需要的列，如果有，尽量使用分区过滤，少用SELECT 星。<br />
 ### 在分区剪裁中，当使用外关联时，如果将副表的过滤条件写在Where后面，那么就会先全表关联，之后再过滤，正确的写法是写在ON后面。<br />
 ### 合理使用Map Join或者Bucket Join。<br />
 ### 少用COUNT DISTINCT，数据量小的时候无所谓，数据量大的情况下，由于COUNT DISTINCT操作需要用一个Reduce Task来完成，这一个Reduce需要处理的数据量太大，就会导致整个Job很难完成，一般COUNT DISTINCT使用先GROUP BY再COUNT的方式替换。<br />
@@ -50,7 +50,7 @@ INSERT OVERWRITE TABLE t1 SELECT * FROM t2;
 ### 避免数据倾斜data skew，见下图
 <img src="hive_16.jpg" width="60%" height="60%" alt="hive_16"/><br />
 <img src="hive_17.jpg" width="60%" height="60%" alt="hive_17"/><br />
-##9. 借鉴Apache的open source package-HPL/SQL 0.3，配置上之后就可以在Hive里写stored  procedure，甚至支持variable cursor loop之类
+## 9. 借鉴Apache的open source package-HPL/SQL 0.3，配置上之后就可以在Hive里写stored  procedure，甚至支持variable cursor loop之类
 比如业务上需要将Hive中的表和MySQL的表关联起来查询，或者需要往MySQL里写对Hive的监控分析的audit审计信息时
 
 # Hive 2.1 高阶技巧
