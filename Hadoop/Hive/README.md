@@ -1,6 +1,6 @@
 Hadoop 2.3 -> Hive 2.1
 
-# Hive 2.1
+# Hive 2.1 基础知识
 1. 用sql查询HDFS上的数据<br />
 2. Hive的数据都存储在HDFS的路径/user/hive/warehouse下，一个表一个子目录，使用./hive命令进入Hive shell<br />
 /home<br />
@@ -30,6 +30,12 @@ hdfs://master_server/user/hive/warehouse/mydb.db/employees/country=US/state=AK<b
 原因：aggr参数为false时，Hive先用SELECT将所有数据查出来，最后统一放到一台reduce节点机器上进行group by，这时所有的压力都压在这一台节点上；aggr为true时，Hive的SELECT会在每台节点上进行预group by，最后将group by后的数据放在reduce节点上，最终group by，缓解了最终的压力，将group by压力分摊，因此提升了效率。<br />
 <img src="hive_2.jpg" width="60%" height="60%" alt="hive_2"/><br />
 5.2 ni<br />
+
+# Hive 2.1 高阶技巧
+## 理解Hive中的这四个order by，sort by，distribute by，cluster by
+<img src="hive_3.jpg" width="60%" height="60%" alt="hive_2"/><br />
+<img src="hive_4.jpg" width="60%" height="60%" alt="hive_2"/><br />
+<img src="hive_5.jpg" width="60%" height="60%" alt="hive_2"/><br />
 
 # Hive 2.1 案例
 ## 整体数据仓库的架构
@@ -65,5 +71,9 @@ hdfs://master_server/user/hive/warehouse/mydb.db/employees/country=US/state=AK<b
 ## 整体你们项目用Hive干了些啥事儿描述一下
 用Hive一方面业务部分有日常的提取数据需求，写HQL提数<br />
 一方面构建real time的recommendation system（就是sales representative在customer的现场需要分钟级获取到推荐内容，做customer interaction的时候，录入customer的一些profile等等之后）。<br />
+### a. Global Core X - Bayer
+参考链接https://blog.csdn.net/morexyoung/article/details/78916177  对应CSDN - morexyoung的博客 - 大数据之Hive之扩展项目Youtube案例<一><二>和<三>，情况介绍如下：<br />
+是Bayer的药品网站，全国5000个Sales Representative都会带着iPad出去拜访interaction customer，然后访问网站，需要统计相关药品的热度view、类别category、相关的sales representative (user)情况。<br />
+<img src="YouTube_1.jpg" width="60%" height="60%" alt="YouTube_1"/><br />
 
-
+### b. User Analysis of China Mobile - Digital China
