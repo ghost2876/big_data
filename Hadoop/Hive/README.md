@@ -1,4 +1,4 @@
-Hadoop 2.3, CDH 5.0.0 -> Hive 2.1
+Hadoop 2.3, CDH 5.0.0 -> Hive 2.1, ORCFile or Parquet Columnar NoSQL, Presto Distributed SQL Engine
 
 # Hive 2.1 基础知识
 ## 1. 用sql查询HDFS上的数据<br />
@@ -168,11 +168,11 @@ ori和orc表数据是一致的，因为两张表会按照uploader也就是user_i
 大部分forgot了，统计drop rate because sometimes the telecom connection will be terminated automatically and occasionaly, we have to estimate the drop rate of that accident. 参见这里链接：https://blog.csdn.net/yangshaojun1992/article/details/77917823   有相关表结构。<br />
 
 # Future Research
-a. 对Hive而言，除了有ORCFile这种高压缩比的列式存储外，还有Parquet格式，后者相较于前者的更优势的地方是天生支持complex data structures存储和嵌套nested data structures，介绍文章：CSDN博客 - Parquet与ORC：高性能列式存储格式 - https://blog.csdn.net/yu616568/article/details/51868447 <br />
-b. UDF，具体怎么写没试验<br />
+## a. 对Hive而言，除了有ORCFile这种高压缩比的列式存储外，还有Parquet格式，后者相较于前者的更优势的地方是天生支持complex data structures存储和嵌套nested data structures，介绍文章：CSDN博客 - Parquet与ORC：高性能列式存储格式 - https://blog.csdn.net/yu616568/article/details/51868447
+## b. UDF，具体怎么写没试验<br />
 参考链接：<br />
 简书 - Hive简易教程 - 自定义UDF - 示例：实现转化IP地址为二进制格式 - 链接：https://www.jianshu.com/p/7f8329443aae<br />
 CSDN - bitcarmanlee的博客 - hive udf开发超详细手把手教程 - 链接：https://blog.csdn.net/bitcarmanlee/article/details/51249260<br />
 CSDN - YQlakers的博客 - Hive的UDF是什么？ - 链接：https://blog.csdn.net/yqlakers/article/details/70211522
-c. Distributed NoSQL <Hive> (ORCFile or Parquet, columnar storage) + Distributed SQL Engine <Presto>
+## c. Distributed NoSQL <Hive> (ORCFile or Parquet, columnar storage) + Distributed SQL Engine <Presto>
 参看文章“环境搭建 Hadoop+Hive(orcfile格式)+Presto实现大数据存储查询”，链接：https://www.cnblogs.com/nyzhai/p/6102423.html
