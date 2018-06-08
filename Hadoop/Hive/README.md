@@ -164,8 +164,6 @@ ori和orc表数据是一致的，因为两张表会按照uploader也就是user_i
 用到了Hive编写UDF来从网上的open source IP库来查IP地址做geo match，看看与对应的IP地址之间的距离，以及我们设定的距离，看判断是否真的有拜访interaction, in case fraud.
 使用UDF就是重写evaluate方法，继承.UDF class<br />
 然后在Hive的SELECT时对每一行数据都会应用到UDF来判断。
-### c. User Analysis of China Mobile - Digital China
-大部分forgot了，统计drop rate because sometimes the telecom connection will be terminated automatically and occasionaly, we have to estimate the drop rate of that accident. 参见这里链接：https://blog.csdn.net/yangshaojun1992/article/details/77917823   有相关表结构。<br />
 
 # Future Research
 ## a. 对Hive而言，除了有ORCFile这种高压缩比的列式存储外，还有Parquet格式，后者相较于前者的更优势的地方是天生支持complex data structures存储和嵌套nested data structures，介绍文章：CSDN博客 - Parquet与ORC：高性能列式存储格式 - https://blog.csdn.net/yu616568/article/details/51868447
