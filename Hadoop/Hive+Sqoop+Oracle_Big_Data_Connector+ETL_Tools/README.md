@@ -101,9 +101,6 @@ Bucket Map Join就是用bucket实现一个bucket和另一个bucket来join<br />
 现在的Hive已经很智能了，你参数放开之后它都会自动去找合适的join方式。
 
 # Hive 2.1 案例
-## 整体数据仓库的架构
-处理之前的导入：通过 hadoop 命令将日志数据导入到 hdfs 文件系统，<br />
-处理完成之后的导出：利用 hive 处理完成之后的数据，通过 sqoop 导出到 mysql或HBase 数据库中，以供报表层使用。<br />
 ## 你在项目中遇到了哪些难题，是怎么解决的？
 某些任务执行时间过长，且失败率过高，检查日志后发现没有执行完就失败，原因出在hadoop 的 job 的 timeout 过短（相对于集群的能力来说），设置长一点即可<br />
 其实就是-Dmapreduce.task.timeout=1200000单位是毫秒<br />
@@ -134,6 +131,10 @@ Bucket Map Join就是用bucket实现一个bucket和另一个bucket来join<br />
 ## 整体你们项目用Hive干了些啥事儿描述一下
 用Hive一方面业务部分有日常的提取数据需求，写HQL提数<br />
 一方面构建real time的recommendation system（就是sales representative在customer的现场需要分钟级获取到推荐内容，做customer interaction的时候，录入customer的一些profile等等之后）。<br />
+### (重要！) 整体数据仓库的架构
+处理之前的导入：通过 hadoop 命令将日志数据导入到 hdfs 文件系统，如果是日记收集logs capture建议采用Kafka、Flume或者Chukwa，如果是从业务系统Service-oriented tables导出数据建议使用Sqoop、Oracle的big data connector。业务系统一般运行在MySQL、Oracle RAC或者Postgres上，普通就说Oracle RAC即可。<br />
+ETL部分的话，采用IBM DataStage作为平台（没有用Kettle或者Talend，各有原因）。用IBM DataStage作一些初级的数据汇总处理，这样省去了Java开发的时间，效率高，因为其有GUI，又有好的tech support。当然DataStage跟Sqoop是并列使用的。<br />
+处理完成之后的导出：利用 hive 处理完成之后的数据，通过 sqoop 导出到 mysql或HBase 数据库中，以供报表层使用。<br />
 ### a. Global Core X - Bayer
 参考链接https://blog.csdn.net/morexyoung/article/details/78916177  对应CSDN - morexyoung的博客 - 大数据之Hive之扩展项目Youtube案例<一><二>和<三>，情况介绍如下：<br />
 是Bayer的药品网站，全国5000个Sales Representative都会带着iPad出去拜访interaction customer，然后访问网站，需要统计相关药品的热度view、类别category、相关的sales representative (user)情况。<br />
@@ -174,3 +175,16 @@ CSDN - bitcarmanlee的博客 - hive udf开发超详细手把手教程 - 链接�
 CSDN - YQlakers的博客 - Hive的UDF是什么？ - 链接：https://blog.csdn.net/yqlakers/article/details/70211522
 ## c. Distributed NoSQL <Hive> (ORCFile or Parquet, columnar storage) + Distributed SQL Engine <Presto>
 参看文章“环境搭建 Hadoop+Hive(orcfile格式)+Presto实现大数据存储查询”，链接：https://www.cnblogs.com/nyzhai/p/6102423.html
+
+# Sqoop
+
+# Oracle Big Data Connector
+
+# ETL工具我还没有想好，无非就是IBM DataStage，Kettle，Talend
+这仨有啥区别？看下面：<br />
+IBM DataStage，有IBM的tech support，GUI特别方便，成本高，自己可以调度<br />
+Kettle，open source，GUI特别方便，tech support去community，但须二次开发，没成本，自己可以调度<br />
+Talend，虽然有GUI但须作为Eclipse的plug-in使用，support不好找，没成本，仅能通过operating system调度<br />
+多种ETL工具比较的参考链接：<br />
+https://www.datasciencecentral.com/profiles/blogs/10-open-source-etl-tools<br />
+https://northconcepts.com/blog/2017/08/31/java-etl-tools/
